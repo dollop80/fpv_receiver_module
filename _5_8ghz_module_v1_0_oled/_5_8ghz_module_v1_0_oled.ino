@@ -20,10 +20,10 @@ U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_DEV_0|U8G_I2C_OPT_NO_ACK|U8G_I2C_OPT_FAST)
 
 #define SSP 10 //receiver pin
 //BUTTONS defines
-#define Bolche 9
-#define Regim 7
-#define Menche 8
-#define Vvod 6
+#define button_UP 9
+#define button_Mode 7
+#define button_DWN 8
+#define button_Enter 6
 
 #define Voltage A7 //Voltage input
 #define Rssiin A0  //RSSI input
@@ -117,14 +117,14 @@ void setup()
     u8g.setHiColorByRGB(255,255,255);
   }
 
-  pinMode(Bolche, INPUT);
-  digitalWrite(Bolche, HIGH);
-  pinMode(Menche, INPUT);
-  digitalWrite(Menche, HIGH);
-  pinMode(Vvod, INPUT);
-  digitalWrite(Vvod, HIGH);
-  pinMode(Regim, INPUT);
-  digitalWrite(Regim, HIGH);
+  pinMode(button_UP, INPUT);
+  digitalWrite(button_UP, HIGH);
+  pinMode(button_DWN, INPUT);
+  digitalWrite(button_DWN, HIGH);
+  pinMode(button_Enter, INPUT);
+  digitalWrite(button_Enter, HIGH);
+  pinMode(button_Mode, INPUT);
+  digitalWrite(button_Mode, HIGH);
 
   DelitelL= EEPROM.read(0);
   DelitelH= EEPROM.read(1);
@@ -274,7 +274,7 @@ void loop()
 /////////////////////////////////////////////////////////////////// 
   BatMeasure();
   //modes switch and display
-  while (digitalRead(Regim)==LOW)
+  while (digitalRead(button_Mode)==LOW)
   {
     var=var++;
     cont_scn=0;
@@ -355,18 +355,18 @@ void loop()
        }
       if (Freguency <5500) Freguency=5999;
       if (Freguency >6000) Freguency=5501;
-      if (digitalRead(Bolche)==LOW or digitalRead(Menche)==LOW)
+      if (digitalRead(button_UP)==LOW or digitalRead(button_DWN)==LOW)
        {
         n=n+1;
-        if (digitalRead(Bolche)==LOW and n<15) Freguency=Freguency+2;
-        if (digitalRead(Bolche)==LOW and n>=15) Freguency=Freguency+10;
-        if (digitalRead(Menche)==LOW and n<15 )  Freguency=Freguency-2;
-        if (digitalRead(Menche)==LOW and n>=15 )  Freguency=Freguency-10;
+        if (digitalRead(button_UP)==LOW and n<15) Freguency=Freguency+2;
+        if (digitalRead(button_UP)==LOW and n>=15) Freguency=Freguency+10;
+        if (digitalRead(button_DWN)==LOW and n<15 )  Freguency=Freguency-2;
+        if (digitalRead(button_DWN)==LOW and n>=15 )  Freguency=Freguency-10;
         prog_freg();
        }
        else n=0;  
  
-    if (digitalRead(Vvod)==LOW) //write frequency to the EEPROM
+    if (digitalRead(button_Enter)==LOW) //write frequency to the EEPROM
     {
 //      short_bip();
       EEPROM.write(0, DelitelL);
@@ -386,7 +386,7 @@ void loop()
         Freguency = 5495+4*cont_scn;
         prog_freg(); //receiver control
         delay (20);
-        if (digitalRead(Bolche)==LOW) delay (1000); //you may pause the process for a while
+        if (digitalRead(button_UP)==LOW) delay (1000); //you may pause the process for a while
         sval=0;
         for ( byte u = 0; u < 10; u++)  //Reads RSSI 10 times
          {
@@ -441,16 +441,16 @@ When we summarize 10 values we get 1550 min and 3410 max.
      cont_scn=0;
      if (VoltDivider <1) VoltDivider=255;
      if (VoltDivider >255) VoltDivider=1;  
-     if (digitalRead(Bolche)==LOW or digitalRead(Menche)==LOW)
+     if (digitalRead(button_UP)==LOW or digitalRead(button_DWN)==LOW)
       {
        n=n+1;
-       if (digitalRead(Menche)==LOW and n<15) VoltDivider=VoltDivider+1;
-       if (digitalRead(Menche)==LOW and n>=15) VoltDivider=VoltDivider+10;
-       if (digitalRead(Bolche)==LOW and n<15) VoltDivider=VoltDivider-1;
-       if (digitalRead(Bolche)==LOW and n>=15) VoltDivider=VoltDivider-10;
+       if (digitalRead(button_DWN)==LOW and n<15) VoltDivider=VoltDivider+1;
+       if (digitalRead(button_DWN)==LOW and n>=15) VoltDivider=VoltDivider+10;
+       if (digitalRead(button_UP)==LOW and n<15) VoltDivider=VoltDivider-1;
+       if (digitalRead(button_UP)==LOW and n>=15) VoltDivider=VoltDivider-10;
       }
     else n=0;
-    if (digitalRead(Vvod)==LOW)
+    if (digitalRead(button_Enter)==LOW)
     {
       EEPROM.write(5, VoltDivider);
       delay(2000);
