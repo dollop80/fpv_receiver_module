@@ -43,6 +43,7 @@ byte modes_bits=0;
 #define SPC_start_flag 1
 #define SCN_start_flag 2
 #define VLT_start_flag 3
+#define SCN_success_flag 4
 byte LowBat_flag=0;
 unsigned int Freguency=0;
 unsigned int VoltDivider;
@@ -320,8 +321,19 @@ void loop()
        }
       }while( u8g.nextPage() );     
      break;
-    }
-    delay(700);
+    }    
+        //if we are here after any mode but succesful scanner     
+        DelitelL= EEPROM.read(0);              //read preset frequency
+        DelitelH= EEPROM.read(1);              //
+        Freguency= (DelitelH *32 + DelitelL)*2 +479;
+        prog_freg();                           //and write it to the receiver module
+
+        //clean spectrum values on exit
+        if (!bitRead(modes_bits, SPC_start_flag))
+        {
+         for (byte i=0; i<128; i++) tmp_arr[i]=0; 
+        }    
+    delay(700); //for buttons
   };
 
     if(LowBat_flag != 0)     //for low battery indication
@@ -335,6 +347,7 @@ void loop()
     case 0: ////////////////////receiver mode
       cont_scn=0;
       sval=0;
+      
       for ( byte i = 0; i < 10; i++)
        {
          sval = sval + analogRead(Rssiin);
@@ -402,7 +415,7 @@ When we summarize 10 values we get 1550 min and 3410 max.
       cont_scn++;
       Freguency = 5501+2*cont_scn;
       prog_freg();
-      delay(40);
+      delay(30);
       sval =analogRead(Rssiin);
       if (sval > RSSI )
       {
@@ -417,9 +430,11 @@ When we summarize 10 values we get 1550 min and 3410 max.
      var=0;
      cont_scn=0;
      RSSI=0;
+     modes_bits = 0;
+     bitSet (modes_bits, SCN_success_flag);
     }
-    modes_bits = 0;
-    bitSet (modes_bits, SCN_start_flag);
+     modes_bits = 0;
+     bitSet (modes_bits, SCN_start_flag);
     break;
 ///////////////////////////////////////////////////////////////////      
     case 3: //////////////////////voltage setup mode
