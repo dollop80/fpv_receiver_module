@@ -359,7 +359,7 @@ void draw(void) {
 ///////////////////////////////////////////////////////////////////     
     case 4: //Freq mode setup
       u8g.setFont(u8g_font_8x13B); //mode header
-      u8g.drawStr(22,10, "FREQUENCES");
+      u8g.drawStr(20,10, "FREQUENCIES");
       u8g.setFont(u8g_font_6x10);
       if (frequency_type)
        {
@@ -437,7 +437,7 @@ void loop()
        else
        {
         u8g.setFont(u8g_font_8x13B);
-        u8g.drawStr(22,30,"FREQUENCES");
+        u8g.drawStr(20,30,"FREQUENCIES");
        }
       }while( u8g.nextPage() );     
      break;
