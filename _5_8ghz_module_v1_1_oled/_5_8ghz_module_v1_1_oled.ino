@@ -380,7 +380,7 @@ void loop()
   //modes switch and display
   while (digitalRead(button_Mode)==LOW)
   {
-    var=var++;
+    var++;
     cont_scn=0;
     if (var>4) var=0 ;
 //    short_bip();
